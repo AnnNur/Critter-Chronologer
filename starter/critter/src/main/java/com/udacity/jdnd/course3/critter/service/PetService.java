@@ -1,8 +1,8 @@
 package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
+import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
 import com.udacity.jdnd.course3.critter.repository.PetRepository;
-import com.udacity.jdnd.course3.critter.repository.UserRepository;
 import com.udacity.jdnd.course3.critter.user.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +18,16 @@ public class PetService {
     @Autowired
     PetRepository petRepository;
     @Autowired
-    UserRepository userRepository;
+    CustomerRepository customerRepository;
 
     public Pet addPet(Pet pet) {
         Pet addedPet = petRepository.save(pet);
-        Customer customer = (Customer) addedPet.getOwner();
+        Customer customer = addedPet.getOwner();
         List<Pet> customerPets = Optional.ofNullable(customer.getPets()).orElse(new ArrayList<>());
 
         customerPets.add(addedPet);
         customer.setPets(customerPets);
-        userRepository.save(customer);
+        customerRepository.save(customer);
 
         return addedPet;
     }

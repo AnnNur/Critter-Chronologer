@@ -1,8 +1,9 @@
 package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
+import com.udacity.jdnd.course3.critter.service.CustomerService;
+import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import com.udacity.jdnd.course3.critter.service.PetService;
-import com.udacity.jdnd.course3.critter.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
     @Autowired
-    UserService userService;
+    CustomerService customerService;
+    @Autowired
+    EmployeeService employeeService;
 
     @Autowired
     PetService petService;
@@ -32,14 +34,14 @@ public class UserController {
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO) {
         Customer customer = convertCustomerDTOToCustomer(customerDTO);
-        Customer addedCustomer = (Customer) userService.addUser(customer);
+        Customer addedCustomer = customerService.addCustomer(customer);
 
         return convertCustomerToCustomerDTO(addedCustomer);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers() {
-        List<Customer> allCustomers = userService.getAllCustomers();
+        List<Customer> allCustomers = customerService.getAllCustomers();
         List<CustomerDTO> customerDTOList = new ArrayList<>();
         if (allCustomers != null) {
             customerDTOList = allCustomers.stream()
@@ -53,29 +55,29 @@ public class UserController {
     public CustomerDTO getOwnerByPet(@PathVariable long petId) {
         Pet pet = petService.getPetById(petId);
 
-        Customer customer = (Customer) pet.getOwner();
+        Customer customer = pet.getOwner();
         return convertCustomerToCustomerDTO(customer);
     }
 
     @PostMapping("/employee")
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
         Employee employee = convertEmployeeDTOToEmployee(employeeDTO);
-        Employee addedEmployee = (Employee) userService.addUser(employee);
+        Employee addedEmployee = employeeService.addEmployee(employee);
 
         return convertEmployeeToEmployeeDTO(addedEmployee);
     }
 
     @PostMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        Employee employee = userService.getEmployeeById(employeeId);
+        Employee employee = employeeService.getEmployeeById(employeeId);
         return convertEmployeeToEmployeeDTO(employee);
     }
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        Employee employee = userService.getEmployeeById(employeeId);
+        Employee employee = employeeService.getEmployeeById(employeeId);
         employee.setDaysAvailable(daysAvailable);
-        userService.addUser(employee);
+        employeeService.addEmployee(employee);
     }
 
     @GetMapping("/employee/availability")
@@ -83,7 +85,7 @@ public class UserController {
         Set<EmployeeSkill> skills = employeeDTO.getSkills();
         DayOfWeek day = employeeDTO.getDate().getDayOfWeek();
 
-        List<Employee> employeesWithSkillsAvailableOnDay = userService.getAvailableEmployees(day, skills);
+        List<Employee> employeesWithSkillsAvailableOnDay = employeeService.getAvailableEmployees(day, skills);
         return employeesWithSkillsAvailableOnDay.stream()
                 .map(this::convertEmployeeToEmployeeDTO)
                 .collect(Collectors.toList());

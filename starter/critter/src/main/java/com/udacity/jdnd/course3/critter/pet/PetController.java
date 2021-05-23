@@ -1,8 +1,8 @@
 package com.udacity.jdnd.course3.critter.pet;
 
+import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.PetService;
-import com.udacity.jdnd.course3.critter.service.UserService;
-import com.udacity.jdnd.course3.critter.user.User;
+import com.udacity.jdnd.course3.critter.user.Customer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class PetController {
     @Autowired
     PetService petService;
     @Autowired
-    UserService userService;
+    CustomerService customerService;
 
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
@@ -55,8 +55,8 @@ public class PetController {
     private Pet convertPetDTOToPet(PetDTO petDTO) {
         Pet pet = new Pet();
         BeanUtils.copyProperties(petDTO, pet);
-        User user = userService.getCustomerById(petDTO.getOwnerId());
-        pet.setOwner(user);
+        Customer customer = customerService.getCustomerById(petDTO.getOwnerId());
+        pet.setOwner(customer);
 
         return pet;
     }

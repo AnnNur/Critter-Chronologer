@@ -1,13 +1,13 @@
 package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
+import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
+import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
 import com.udacity.jdnd.course3.critter.repository.PetRepository;
 import com.udacity.jdnd.course3.critter.repository.ScheduleRepository;
-import com.udacity.jdnd.course3.critter.repository.UserRepository;
 import com.udacity.jdnd.course3.critter.schedule.Schedule;
 import com.udacity.jdnd.course3.critter.user.Customer;
 import com.udacity.jdnd.course3.critter.user.Employee;
-import com.udacity.jdnd.course3.critter.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,9 @@ public class ScheduleService {
     @Autowired
     ScheduleRepository scheduleRepository;
     @Autowired
-    UserRepository userRepository;
+    CustomerRepository customerRepository;
+    @Autowired
+    EmployeeRepository employeeRepository;
     @Autowired
     PetRepository petRepository;
 
@@ -42,15 +44,15 @@ public class ScheduleService {
     }
 
     public List<Schedule> getSchedulesForEmployee(Long employeeId) {
-        Optional<User> optionalUser = userRepository.findById(employeeId);
-        Employee employee = (Employee) optionalUser.orElse(null);
+        Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
+        Employee employee = optionalEmployee.orElse(null);
 
         return scheduleRepository.getSchedulesByEmployeesContains(employee);
     }
 
     public List<Schedule> getSchedulesForCustomer(Long customerId) {
-        Optional<User> optionalUser = userRepository.findById(customerId);
-        Customer customer = (Customer) optionalUser.orElse(null);
+        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+        Customer customer = optionalCustomer.orElse(null);
 
         List<Schedule> schedules = new ArrayList<>();
         List<Pet> pets = customer.getPets();

@@ -1,9 +1,9 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
+import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import com.udacity.jdnd.course3.critter.service.PetService;
 import com.udacity.jdnd.course3.critter.service.ScheduleService;
-import com.udacity.jdnd.course3.critter.service.UserService;
 import com.udacity.jdnd.course3.critter.user.Employee;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class ScheduleController {
     @Autowired
     PetService petService;
     @Autowired
-    UserService userService;
+    EmployeeService employeeService;
 
     @PostMapping
     public ScheduleDTO createSchedule(@RequestBody ScheduleDTO scheduleDTO) {
@@ -76,7 +76,7 @@ public class ScheduleController {
         List<Employee> employees = new ArrayList<>();
         if (scheduleDTO.getEmployeeIds() != null) {
             employees = scheduleDTO.getEmployeeIds().stream()
-                    .map(employeeId -> userService.getEmployeeById(employeeId))
+                    .map(employeeId -> employeeService.getEmployeeById(employeeId))
                     .collect(Collectors.toList());
         }
         schedule.setEmployees(employees);
